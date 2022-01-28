@@ -272,7 +272,7 @@ En 3 parties:
 
 
 
-Head : 
+- Head : 
 
 
 
@@ -297,11 +297,11 @@ gatk --java-options "-Xmx80g" CombineGVCFs \
 
 
 
-La list
+- La liste
 
 
 
-Tail: 
+- Tail: 
 
 ``` -O /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/CORjaune/LesVCF/MetaGenotypes${CHR}.g.vcf.gz
 echo "Finnished: "`date`
@@ -367,7 +367,7 @@ done
 
 
 
-En sorti on a les 10 dernières positions pour chaques chromosome dans MetaGenotypesNC_001566.1.g.vcf.check
+En sortie on a les 10 dernières positions pour chaques chromosome dans MetaGenotypesNC_001566.1.g.vcf.check
 
 Position des derniers variants de chaque chromosomes: 
 
