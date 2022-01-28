@@ -1,6 +1,6 @@
 ###  1. Introduction
 
-Ce document présente les analyses faites pour obtenir les résultats qui sont présentés par la suite. Pour la rétabilité ou les différentes listes les chemins sont à changer et à adapter.
+Ce document présente les analyses faites pour obtenir les résultats qui sont présentés par la suite. Pour la répétabilité ou les différentes listes les chemins sont à changer et à adapter.
 
 Les version des software utilisés sont les suivantes:
 
@@ -574,4 +574,28 @@ gatk --java-options "-Xmx64g" SelectVariants \
 zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawSNPs
 ```
+
+
+### Retiens les INDELs
+
+```
+#!/bin/bash
+
+#retainSNPs.bash
+
+module load -f /home/gencel/vignal/save/000_ProgramModules/program_module
+
+OUT=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/
+
+gatk --java-options "-Xmx64g" SelectVariants \
+     -R /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna \
+     -V ${OUT}/MetaGenotypesCalled870.vcf.gz \
+     --select-type-to-include INDEL \
+     -O ${OUT}/MetaGenotypesCalled870_raw_snps.vcf.gz
+
+#Count the SNPs
+zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
+awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawINDELs
+```
+
 
