@@ -581,6 +581,29 @@ zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | un
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawSNPs
 ```
 
+```
+more countVcfSumRawSNPs
+NC_001566.1	906
+NC_037638.1	1036622
+NC_037639.1	574994
+NC_037640.1	524172
+NC_037641.1	463357
+NC_037642.1	519761
+NC_037643.1	668226
+NC_037644.1	512649
+NC_037645.1	475086
+NC_037646.1	435269
+NC_037647.1	415238
+NC_037648.1	528650
+NC_037649.1	451015
+NC_037650.1	434113
+NC_037651.1	379640
+NC_037652.1	345615
+NC_037653.1	288022
+Sum	8053335
+```
+
+Environ 8 millions de SNPs 
 
 ### Retiens les INDELs
 
@@ -603,5 +626,29 @@ gatk --java-options "-Xmx64g" SelectVariants \
 zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawINDELs
 ```
+``` 
+more countVcfSumRawINDELs
+NC_001566.1	247
+NC_037638.1	374573
+NC_037639.1	204149
+NC_037640.1	195395
+NC_037641.1	166756
+NC_037642.1	186348
+NC_037643.1	237894
+NC_037644.1	187471
+NC_037645.1	173642
+NC_037646.1	155994
+NC_037647.1	142659
+NC_037648.1	190957
+NC_037649.1	161150
+NC_037650.1	147239
+NC_037651.1	140678
+NC_037652.1	126219
+NC_037653.1	107365
+Sum	2898736
+```
+
+Environ 2 900 000 Indels 
+
 
 
