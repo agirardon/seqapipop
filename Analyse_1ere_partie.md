@@ -591,7 +591,7 @@ gatk --java-options "-Xmx64g" SelectVariants \
      -R /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna \
      -V ${OUT}/MetaGenotypesCalled870.vcf.gz \
      --select-type-to-include INDEL \
-     -O ${OUT}/MetaGenotypesCalled870_raw_snps.vcf.gz
+     -O ${OUT}/MetaGenotypesCalled870_raw_indels.vcf.gz
 
 #Count the SNPs
 zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
