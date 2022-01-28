@@ -45,7 +45,13 @@ module load bioinfo/popoolation2_1201
 
 Le génome de référence utiliser est Amel_HAv3.1 de Genebank : GCA_003254395.2
 
+### fastq file 
 
+Les fichiers fastq individuel des population sont obtenus par sequencage Illumina. 
+
+### Préparation du mapping
+
+Pour chaque run on a R1_fastq.gz et R2_fastq.gz avec le forward et le reverse read 
 
 ### Recuperation des chemins de fastq 
 
