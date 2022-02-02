@@ -4,7 +4,9 @@ Ce document présente les analyses faites pour obtenir les résultats qui sont p
 
 Les version des software utilisés sont les suivantes:
 
-``` 
+Ne garder que les modules pour les logiciels effectivement utilisés dans cette partie de l'analyse (de fastq à vcf).
+
+```
 more module
 #%Module1.0###############################################################
 
@@ -43,27 +45,38 @@ module load bioinfo/popoolation2_1201
 
 ### Genome de référence
 
-Le génome de référence utiliser est Amel_HAv3.1 de Genebank : GCA_003254395.2
+Le génome de référence utilisé est Amel_HAv3.1 de Genebank : GCA_003254395.2
 
-### fastq file 
+### fastq file
 
-Les fichiers fastq individuel des population sont obtenus par sequencage Illumina. 
+Les fichiers fastq individuel des population sont obtenus par sequencage Illumina.
 
 ### Préparation du mapping
 
-Pour chaque run on a R1_fastq.gz et R2_fastq.gz avec le forward et le reverse read 
+Pour chaque run on a R1_fastq.gz et R2_fastq.gz avec le forward et le reverse read
 
-### Recuperation des chemins de fastq 
+### Recuperation des chemins de fastq
 
-more corse_yellow.list diviser en 7 pour pouvoir lancer les jobs petits à petit 
+montrer la liste (les 3 premières lignes) : head -3 corse_yellow.list
 
-### Mapping 
+Idéalement, montrer aussi la commande qui a permis de générer cette liste. Je pense que c'est moi qui l'ai écrite, et que je te l'avais envoyée. C'est du bash et awk.
+
+```
+more corse_yellow.list diviser en 7 pour pouvoir lancer les jobs petits à petit
+```
+
+
+### Mapping
 
 
 
-Les script de Mapping effectue le mapping avec BWA, marquage des lectures avec Picard, GATK BQSR( Base Quality Score Replication) 
+Les script de Mapping effectue le mapping avec BWA, marquage des lectures avec Picard, GATK BQSR( Base Quality Score Replication)
 
-On appelle les variants avec GATK HaplotypeCaller, qui donnent les fichiers .gvcf individuel 
+Ce script de mapping appelle 3 scripts en tout : les nommer et les mettre dans un dossier scripts.
+
+Préciser que l'on édite les chemins.
+
+On appelle les variants avec GATK HaplotypeCaller, qui donnent les fichiers .gvcf individuel
 
 
 
@@ -95,13 +108,13 @@ while read line
 do
 	ID=`basename ${line}`	# give the name of the sample-population to map
 	IN=`dirname ${line}`	# give the path where find the sample fastq
-	
+
 	mkdir -p ${OUT}/${ID}
-	
+
 	sbatch --cpus-per-task=1 --mem-per-cpu=6G \
 		-J ${ID}_mapping -o ${OUT}/logs/${ID}_mapping.o -e ${OUT}/logs/${ID}_mapping.e \
 		${SCRIPT}/mappingAV_2019_Dec.sh -s ${ID} -i ${IN} -o ${OUT}/${ID} -p ${PLOIDY} -n ${N} -e ${OUT}/logs -R ${REF} -C ${CHROMOSOME} -U ${UNKNOWN}
-		
+
 done < ${SAMPLE_FILE}
 
 
@@ -111,13 +124,17 @@ done < ${SAMPLE_FILE}
 
 
 
-La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, des tests ont été fait avec PLOIDY=1 cela conduisait a un faux genotype dans les sequences répétées, et donnaient des SNP faussement positifs 
+La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, des tests ont été fait avec PLOIDY=1 cela conduisait a un faux genotype dans les sequences répétées, et donnaient des SNP faussement positifs
+
+Ce point devra être expliqué. On peut le revoir à l'occasion. J'ai des dias qui montrent le problème.
 
 N=1  car il peut être utilisé pour un pool d'individus
 
 
 
-Ce script prend une liste de chemin vers des noms d'echantillons : 
+Ce script prend une liste de chemin vers des noms d'echantillons :
+
+le head -3 plus haut.
 
 
 
@@ -143,27 +160,34 @@ On obtiendra donc plusieurs fichier :
 
 Les .bam en appelant mappingAV_2019_Dec.sh il effectue le mapping et la detection des lectures dupliquées :
 
+- BWA
+- Picard MarkDuplicates (vérifier le nom exact).
 
-
-Le bootstraping en appelant bootstrapingAV_2019_Dec.sh fait un recalibrage du score de qualité de base sur chaque chromosome 
+Le bootstraping en appelant bootstrapingAV_2019_Dec.sh fait un recalibrage du score de qualité de base sur chaque chromosome
 
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003.bam
 
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003_bam.list
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003.bam.bai
 
+C'est le BQSR, en fait. Le nom bootstraping n'est pas tout à fait correct. Il est resté pour des raisons historiques.
 
+et appelle le calling, callingAV_2019_Dec.sh qui fusionne les bams des chromosome dans un genome vcf et effectue le genotypage
 
-et appelle le calling, callingAV_2019_Dec.sh qui fusionne les bams des chromosome dans un genome vcf et effectue le genotypage 
+Non : utilise les bams pour détecter les SNPs à l'aide de haplotype caller (vérifier aussi le nom).
 
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003.g.vcf.gz
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003.g.vcf.gz.tbi
 
 
 
-### Control gvcf are complete 
+### Control gvcf are complete
 
+Dire que c'est pour vérifier que l'on va bien au bout (risque de jobs interrompus possibles pour diverses raisons...
 
+Détaille un peu ce que font les commandes bcftools query -f '%CHROM\n' ${i} | et grep ^NC | uniq -c
+
+D'une manière générale, mieux expliquer tes scripts.
 
 ```
 #!/bin/bash
@@ -184,11 +208,13 @@ do
 done
 ```
 
-En effet on verifie qu'on est bien arrivé jusqu'au chromosome mitochondrial qui est le dernier à être lancé 
+A quoi ressembent les fichiers de sortie ?
+
+En effet on verifie qu'on est bien arrivé jusqu'au chromosome mitochondrial qui est le dernier à être lancé
 
 
 
-avec la commande 
+avec la commande
 
 ``` grep NC_001566.1 *.count | wc -l
  grep NC_001566.1 *.count | wc -l
@@ -196,11 +222,11 @@ avec la commande
 
 
 
-### Recuperation list 
+### Recuperation list
 
 
 
-récupération des chemins pour la suite: 
+récupération des chemins pour la suite:
 
 ```
 #!/bin/bash
@@ -210,18 +236,27 @@ ls /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/*/c
 for i in `awk '{print$1}' /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/RFMix/Pure95/in/IndsPopReference.list`
 do
 	grep ${i}_ chemin.all | awk '{print "    --variant",$1,"\\"}'  >> ref.list #ATTENTION a supprimer si on relancer sinon ca ajoute tout
-done 
+done
 
 rm chemin.all
 ```
 
 
 
-ca donnera : 
+ca donnera :
 
+Pareil, pour faire plus compact, faire:
 
+```
+head -3 IndsPopReference.list
+    --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC10_ATGTCA_L002/calling/AOC10_ATGTCA_L002.g.vcf.gz \
+    --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC11_CCGTCC_L002/calling/AOC11_CCGTCC_L002.g.vcf.gz \
+    --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC12_GTCCGC_L002/calling/AOC12_GTCCGC_L002.g.vcf.gz \
+```
 
-``` 
+Et du coup, effacer le cadre suivant:
+
+```
     --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC10_ATGTCA_L002/calling/AOC10_ATGTCA_L002.g.vcf.gz \
     --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC11_CCGTCC_L002/calling/AOC11_CCGTCC_L002.g.vcf.gz \
     --variant /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/Haploid/AOC12_GTCCGC_L002/calling/AOC12_GTCCGC_L002.g.vcf.gz \
@@ -278,7 +313,7 @@ En 3 parties:
 
 
 
-- Head : 
+- Head :
 
 
 
@@ -307,7 +342,7 @@ gatk --java-options "-Xmx80g" CombineGVCFs \
 
 
 
-- Tail: 
+- Tail:
 
 ``` -O /genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/CORjaune/LesVCF/MetaGenotypes${CHR}.g.vcf.gz
 echo "Finnished: "`date`
@@ -315,11 +350,11 @@ echo "Finnished: "`date`
 
 
 
-On obtient donc le script Called 
+On obtient donc le script Called
 
-qui sera lancer par le script 
+qui sera lancé par le script
 
-
+Préciser que ce script permet de lancer les différents chromosomes en parallèle, grâce au passage de la variable ${i} à l'aide de l'option -c.
 
 ```
 #!/bin/bash
@@ -349,6 +384,8 @@ On doit obtenir un fichier par chromosomes (17 : 16 autosome 1 mitochondrial)
 
 ### Check Combine
 
+Dire que c'est pour vérifier que l'on va bien au bout (risque de jobs interrompus possibles pour diverses raisons...
+
 ```
 #!/bin/bash
 
@@ -375,7 +412,7 @@ done
 
 En sortie on a les 10 dernières positions pour chaques chromosome dans MetaGenotypesNC_001566.1.g.vcf.check
 
-Position des derniers variants de chaque chromosomes: 
+Position des derniers variants de chaque chromosomes:
 
 ```
  for i in `ls *.check`; do tail -1 ${i}; done
@@ -402,9 +439,9 @@ NC_037653.1     7238523
 
 
 
-On compare a la longueur des chromosome : 
+On compare a la longueur des chromosome :
 
-
+Préciser pourquoi.
 
 ```
 cat /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/HAv3_1_Chromosomes.list
@@ -433,7 +470,7 @@ NC_001566.1     16343
 
 Script de genotypage :
 
-
+Globalement le même mode de fonctionnement que précédemment...
 
 ```
 #!/bin/bash
@@ -491,7 +528,7 @@ done
 grep complete *_genotype.e
 ```
 
-
+Expliquer que cette ligne n'est présente dans les *_genotype.e que si tout s'est bien passé.
 
 Une ligne par chromosome
 
@@ -499,7 +536,7 @@ Une ligne par chromosome
 
 ### Concatenate vcf file
 
-``` 
+```
 #!/bin/bash
 
 #concatenateVCFs.bash
@@ -603,7 +640,7 @@ NC_037653.1	288022
 Sum	8053335
 ```
 
-Environ 8 millions de SNPs 
+Environ 8 millions de SNPs
 
 ### Retiens les INDELs
 
@@ -626,7 +663,7 @@ gatk --java-options "-Xmx64g" SelectVariants \
 zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawINDELs
 ```
-``` 
+```
 more countVcfSumRawINDELs
 NC_001566.1	247
 NC_037638.1	374573
@@ -648,7 +685,4 @@ NC_037653.1	107365
 Sum	2898736
 ```
 
-Environ 2 900 000 Indels 
-
-
-
+Environ 2 900 000 Indels
