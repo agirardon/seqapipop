@@ -125,7 +125,7 @@ done < ${SAMPLE_FILE}
 
 ```
 
-
+A REVOIR : 
 
 La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, des tests ont été fait avec PLOIDY=1 cela conduisait a un faux genotype dans les sequences répétées, et donnaient des SNP faussement positifs 
 
@@ -650,6 +650,13 @@ Sum	2898736
 ```
 
 Environ 2 900 000 Indels 
+
+
+### Récuperation liste SNP 
+
+- Il faut préparer 2 VCF avec 2 listes de SNP différentes
+
+1 apres tous les filtres, avec 7 millions de SNP 
 
 
 
