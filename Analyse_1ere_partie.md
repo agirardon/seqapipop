@@ -131,8 +131,7 @@ La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, d
 
 N=1  car il peut être utilisé pour un pool d'individus
 
-A REPRECISER
-
+Explications plus précises dans le pdf : Mapping_Explication_PLOIDY=2.pdf
 
 Ce script prend une liste de chemin vers des noms d'echantillons : 
 
