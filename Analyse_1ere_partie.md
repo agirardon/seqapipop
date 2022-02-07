@@ -701,3 +701,58 @@ head -3 snplist600k.txt
 ```
 
 
+Pour effectué le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia se trouvant dans :
+
+/work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz
+
+
+En effet ici on a soumit notre fichier VCF à plusieurs filtres de qualité pour selectionenr les bons SNPS (voir article et préciser) :
+
+La première série de filtres concerne les problèmes techniques liés aux étapes de séquençage et d'alignement et a donc été utilisée pour le jeu de données total de 870 échantillons, afin de bénéficier de sa plus grande taille pour la détection et la validation des SNP (figure supplémentaire 2). Ces filtres comprenaient (i) des biais de brin et des métriques de qualité de cartographie (SOR ≥ 3 ; FS ≤ 60 et MQ ≥ 40), (ii) des métriques de qualité de génotypage (QUAL > 200 et QD < 20) et (iii) des métriques de génotypage de SNP individuels (appels hétérozygotes < 1 % ; génotypes manquants < 5 %, nombre d'allèles < 4 et génotypes ayant un QG individuel < 10 < 20 %). Les graphiques de distribution et d'ECDF des valeurs pour tous les filtres utilisés sur l'ensemble de données ont été utilisés pour sélectionner les seuils et sont présentés dans le fichier supplémentaire SeqApiPop_2_VcfCleanup.pdf.
+
+Les figures se trouve sur dans l'article ( dois-je les rajouter dans mon git hub ): https://www.biorxiv.org/content/10.1101/2021.09.20.460798v2.full -> Quality filters on SNPs
+
+Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous somme sur de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreMetaGenotypesCalled7M.sh, et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
+
+
+``` 
+#!/bin/sh
+
+module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
+
+#bgzip -c les fichiers doivent être sous format .gz
+#bcftools index les fichiers douvent être indexés
+
+bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870.vcf.gz -o  /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870filtred.vcf.gz
+
+``` 
+
+Explication :
+
+-c none est la valeur par défaut donc vous n'avez pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. Notez que cela signifie que A>G et A>G,C ne sont PAS identiques.
+
+-n=2 indique à bcftools isec de sortir les variantes présentes dans exactement deux fichiers.
+
+-w1 Sans cette option, bcftools imprimera deux fichiers, un avec les résultats de A qui se chevauchent avec B, et un autre avec les résultats de B qui se chevauchent avec A. Comme ceux-ci seraient redondants, nous utilisons cette option pour n'imprimer qu'un seul fichier.
+
+On obtient donc le fichier MetaGenotypesCalled870filtred.vcf.gz, ou l'on a tous nos SNPs ainsi filtré 
+
+Et on compte le nombre de SNPs que nous avons apres "filtrage" grâce à un script similaire lors de la detection de SNPs: statsVcf_filtred.bash: 
+
+```
+#!/bin/bash
+
+#statsVcfs_filtred.bash
+
+zcat MetaGenotypesCalled870filtred.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
+
+awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcffiltredSumRaw
+```
+On obtien donc xxxxxxxxxx SNPs
+
+```
+more countVcffiltredSumRaw
+
+
+``` 
+
