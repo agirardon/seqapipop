@@ -657,5 +657,47 @@ Environ 2 900 000 Indels
 
 1 apres tous les filtres, avec 7 millions de SNP 
 
+ Récupération de la liste des 7 millions de SNP 
+
+```#!/bin/sh
+
+
+
+module load -f /home/gencel/vignal/save/000_ProgramModules/program_module
+
+bcftools query -f '%CHROM %POS\n' /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz -o /home/agirardon/work//seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/list7m.list
+```
+
+le fichier ressemble à : 
+
+
+``` 
+head -3 recup_list.bash
+
+NC_037638.1 5671
+NC_037638.1 5698
+NC_037638.1 6621
+``` 
+
+Pour ce qui est de la liste des 600 000 sous forme de plink 
+
+```
+#!/bin/sh
+
+
+
+awk '{print $2, $4}' /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/SeqApiPop_629_maf001_LD03_pruned.bim > /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist600k.txt
+
+```
+
+le fichier ressemble à : 
+
+```
+head -3 snplist600k.txt
+1:7577[HAV3.1]AG
+1:10360[HAV3.1]CT
+1:11791[HAV3.1]AG
+
+```
 
 
