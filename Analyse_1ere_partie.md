@@ -701,7 +701,7 @@ head -3 snplist600k.txt
 ```
 
 
-Pour effectué le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia se trouvant dans :
+Pour effectué le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia E. Eynard, se trouvant dans :
 
 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz
 
