@@ -759,19 +759,134 @@ On obtient donc le fichier MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz, ou
 Et on compte le nombre de SNPs que nous avons apres "filtrage" grâce à un script similaire lors de la detection de SNPs: statsVcf_filtred.bash: 
 
 ```
+
 #!/bin/bash
 
-#statsVcfs_filtred.bash
+#statsVcfsRaw.bash
 
-zcat MetaGenotypesCalled870filtred.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
+cat MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 
-awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcffiltredSumRaw
-```
-On obtien donc xxxxxxxxxx SNPs
+awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_isec
 
 ```
-more countVcffiltredSumRaw
+On obtien donc 5 104 090 SNPs
 
+```
+more countVcfSumRaw_isec
+NC_001566.1	218
+NC_037638.1	671995
+NC_037639.1	386653
+NC_037640.1	323763
+NC_037641.1	307878
+NC_037642.1	336904
+NC_037643.1	432453
+NC_037644.1	319024
+NC_037645.1	285602
+NC_037646.1	276177
+NC_037647.1	255285
+NC_037648.1	326554
+NC_037649.1	288652
+NC_037650.1	269178
+NC_037651.1	242986
+NC_037652.1	214940
+NC_037653.1	165828
+Sum	5104090
 
 ``` 
+Maintenant on va appliquer le filtre LD :
+
+Pour cela plusieurs étape: 
+
+- Modification du fichier plink : 
+
+``` 
+head -3 snplist_plink_600k.txt
+
+1:7577[HAV3.1]AG
+1:10360[HAV3.1]CT
+1:11791[HAV3.1]AG
+
+``` 
+
+Hors on chercher  a avoir un fichier de format CHROM	POS 
+
+Avec nedit tout simpletment “ search “ -> “ replace “ -> caractère a modifier -> en ""
+
+pour A C G T ,  [HAV3.1] 
+
+Le ficheir est maintenant sous forme : 
+
+1:7577
+
+un simple 
+
+```
+sed -i -e 's/:/\t/g' fichier
+```
+
+permet dobtenir un fichier de la forme 
+
+``` 
+1	7577
+1	10360
+1	11791
+```
+
+Il faut maintenant changer les numéros de chromosomes en leur identifiants :
+
+on recupère seulement les 2 premiers caractère et on supp la tab
+
+```
+cut -c2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modif_col.txt
+sed -i -e 's/\t//g' snplist_plink_600k_modif_col.txt
+
+``` 
+On a donc juste les numéro de chromosome allant de 1 à 16 et avec les commandes sed suivantes on remplace le numéro par l'identifiants
+
+```
+sed -i -e 's/^1$/NC_037638.1/g' snplist_plink_600k_modif_col.txt.test
+sed -i -e 's/^2$/NC_037639.1/g' snplist_plink_600k_modif_col.txt.test
+sed -i -e 's/^3$/NC_037640.1/g' snplist_plink_600k_modif_col.txt.test
+sed -i -e 's/^4$/NC_037641.1/g' snplist_plink_600k_modif_col.txt.test
+``` 
+On garde la deuxieme colonne dans un autre fichier 
+
+```
+cut -f 2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modifoui.txt
+
+```
+Puis on assemble simplement les deux fichier : 
+
+```
+paste snplist_plink_600k_modif_col.txt.test snplist_plink_600k_modifoui.txt > snp_list_plink_600k_fini.txt
+
+```
+
+On obtient donc notre plink sous le format désiré :
+
+``` 
+head -3 snp_list_plink_600k_fini.txt
+NC_037638.1	7577
+NC_037638.1	10360
+NC_037638.1	11791
+```
+
+On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtre LD ont été appliqués précédement, puis avec le script 
+
+``` 
+
+#!/bin/sh
+
+module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
+
+bgzip -c MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz > MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz #compresse le fichier car il est necessaire d'avoir un fichier compressé 
+tabix -p MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz
+
+
+bcftools view -R snplist_plink_600k_fini.txt MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz > MetaGenotypesCalled870_raw_snps_filtreisec_filtreplink.vcf.gz
+
+``` 
+
+
+
 
