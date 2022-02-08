@@ -911,6 +911,26 @@ bcftools view -R snplist_plink_600k_fini.txt MetaGenotypesCalled870_raw_snps_fil
 
 ``` 
 
+On compte maintenant le nombre de SNPs de bonne qualité suite au filtre LD grâce au script statsVcf_filtreLD.bash :
+
+``` 
+#!/bin/bash
+
+
+cat MetaGenotypesCalled870_raw_snps_filtreisec_filtreplink.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
+
+awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_plinked 
+
+```
+
+
+On obtient donc XXXXXXXXXXXXXX SNPs de bonne qualité
+
+```
+more countVcfSumRaw_plinked
+
+```
+
 
 
 
