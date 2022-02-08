@@ -712,7 +712,7 @@ La première série de filtres concerne les problèmes techniques liés aux éta
 
 Les figures se trouve sur dans l'article ( dois-je les rajouter dans mon git hub ): https://www.biorxiv.org/content/10.1101/2021.09.20.460798v2.full -> Quality filters on SNPs
 
-Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous somme sur de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreMetaGenotypesCalled7M.sh, et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
+Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous somme sur de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreisec.sh , et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
 
 
 ``` 
@@ -720,10 +720,9 @@ Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se b
 
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
-#bgzip -c les fichiers doivent être sous format .gz
-#bcftools index les fichiers douvent être indexés
 
-bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870.vcf.gz -o  /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870filtred.vcf.gz
+bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps.vcf.gz -o  /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz
+
 
 ``` 
 
@@ -735,7 +734,27 @@ Explication :
 
 -w1 Sans cette option, bcftools imprimera deux fichiers, un avec les résultats de A qui se chevauchent avec B, et un autre avec les résultats de B qui se chevauchent avec A. Comme ceux-ci seraient redondants, nous utilisons cette option pour n'imprimer qu'un seul fichier.
 
-On obtient donc le fichier MetaGenotypesCalled870filtred.vcf.gz, ou l'on a tous nos SNPs ainsi filtré 
+
+
+
+Autre méthode avec la list des 7 millions de SNPs récupérée plus haut 
+
+ATTENTION IL FAUT "\t" EN SEPARATEUR DANS LA LISTE, LORS DE LA RECUPERATION SE SONT DES ESPACES !!!!
+
+Ici on fait le meme filtrage mais avec bcftools view grace au script filtreview.sh :
+
+```
+#!/bin/sh
+
+module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
+
+bcftools view -R list7mtab.list MetaGenotypesCalled870_raw_snps.vcf.gz > MetaGenotypesCalled870_raw_snps_filtreview.vcf.gz
+
+``` 
+
+VOIR QUELLE METHODE EST LA MEILLEURE
+
+On obtient donc le fichier MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz, ou l'on a tous nos SNPs ainsi filtré 
 
 Et on compte le nombre de SNPs que nous avons apres "filtrage" grâce à un script similaire lors de la detection de SNPs: statsVcf_filtred.bash: 
 
