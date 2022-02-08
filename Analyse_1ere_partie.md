@@ -810,16 +810,16 @@ head -3 snplist_plink_600k.txt
 
 Hors on chercher  a avoir un fichier de format CHROM	POS 
 
-Avec nedit tout simpletment “ search “ -> “ replace “ -> caractère a modifier -> en ""
+- 1) Avec nedit tout simpletment “ search “ -> “ replace “ -> caractère a modifier -> en ""
 
-pour A C G T ,  [HAV3.1] 
+pour A, C, G, T, [HAV3.1] 
 
 Le ficheir est maintenant sous forme : 
 
+```
 1:7577
-
+```
 un simple 
-
 ```
 sed -i -e 's/:/\t/g' fichier
 ```
@@ -831,17 +831,18 @@ permet dobtenir un fichier de la forme
 1	10360
 1	11791
 ```
+Cela permet juste de pouvoir faire un cut plus facilement car par defaut cut utilise comme separateur TAB
 
-Il faut maintenant changer les numéros de chromosomes en leur identifiants :
+- 2) Il faut maintenant changer les numéros de chromosomes en leur identifiants :
 
-on recupère seulement les 2 premiers caractère et on supp la tab
+on recupère seulement les 2 premiers caractères et on supprime \t
 
 ```
 cut -c2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modif_col.txt
 sed -i -e 's/\t//g' snplist_plink_600k_modif_col.txt
 
 ``` 
-On a donc juste les numéro de chromosome allant de 1 à 16 et avec les commandes sed suivantes on remplace le numéro par l'identifiants
+- 3) On a donc juste les numéro de chromosome allant de 1 à 16 et avec les commandes sed suivantes on remplace le numéro par l'identifiants
 
 ```
 sed -i -e 's/^1$/NC_037638.1/g' snplist_plink_600k_modif_col.txt.test
@@ -849,13 +850,13 @@ sed -i -e 's/^2$/NC_037639.1/g' snplist_plink_600k_modif_col.txt.test
 sed -i -e 's/^3$/NC_037640.1/g' snplist_plink_600k_modif_col.txt.test
 sed -i -e 's/^4$/NC_037641.1/g' snplist_plink_600k_modif_col.txt.test
 ``` 
-On garde la deuxieme colonne dans un autre fichier 
+- 4) On garde la deuxieme colonne dans un autre fichier 
 
 ```
 cut -f 2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modifoui.txt
 
 ```
-Puis on assemble simplement les deux fichier : 
+- 5) Puis on assemble simplement les deux fichier : 
 
 ```
 paste snplist_plink_600k_modif_col.txt.test snplist_plink_600k_modifoui.txt > snp_list_plink_600k_fini.txt
