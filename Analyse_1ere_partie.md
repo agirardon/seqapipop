@@ -701,18 +701,18 @@ head -3 snplist600k.txt
 ```
 # Filtrage 
 
-Pour effectué le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia E. Eynard, se trouvant dans :
+Pour effectuer le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia E. Eynard, se trouvant dans :
 
 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz
 
 
-En effet ici on a soumit notre fichier VCF à plusieurs filtres de qualité pour selectionenr les bons SNPS (voir article et préciser) :
+En effet ici on a soumis notre fichier VCF à plusieurs filtres de qualité pour selectionenr les bons SNPS :
 
 La première série de filtres concerne les problèmes techniques liés aux étapes de séquençage et d'alignement et a donc été utilisée pour le jeu de données total de 870 échantillons, afin de bénéficier de sa plus grande taille pour la détection et la validation des SNP (figure supplémentaire 2). Ces filtres comprenaient (i) des biais de brin et des métriques de qualité de cartographie (SOR ≥ 3 ; FS ≤ 60 et MQ ≥ 40), (ii) des métriques de qualité de génotypage (QUAL > 200 et QD < 20) et (iii) des métriques de génotypage de SNP individuels (appels hétérozygotes < 1 % ; génotypes manquants < 5 %, nombre d'allèles < 4 et génotypes ayant un QG individuel < 10 < 20 %). Les graphiques de distribution et d'ECDF des valeurs pour tous les filtres utilisés sur l'ensemble de données ont été utilisés pour sélectionner les seuils et sont présentés dans le fichier supplémentaire SeqApiPop_2_VcfCleanup.pdf.
 
 Les figures se trouve sur dans l'article ( dois-je les rajouter dans mon git hub ): https://www.biorxiv.org/content/10.1101/2021.09.20.460798v2.full -> Quality filters on SNPs
 
-Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous somme sur de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreisec.sh , et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
+Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous sommes sûr de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreisec.sh , et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
 
 
 ``` 
@@ -726,22 +726,22 @@ bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/se
 
 ``` 
 
-- Explication :
 
--c none est la valeur par défaut donc vous n'avez pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. Notez que cela signifie que A>G et A>G,C ne sont PAS identiques.
+-c none est la valeur par défaut, pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. 
+Note: que cela signifie que A>G et A>G,C ne sont PAS identiques.
 
--n=2 indique à bcftools isec de sortir les variantes présentes dans exactement deux fichiers.
+-n=2 indique à bcftools isec de sortir les variants présentes dans exactement deux fichiers.
 
 -w1 Sans cette option, bcftools imprimera deux fichiers, un avec les résultats de A qui se chevauchent avec B, et un autre avec les résultats de B qui se chevauchent avec A. Comme ceux-ci seraient redondants, nous utilisons cette option pour n'imprimer qu'un seul fichier.
 
 
 
 
-Autre méthode avec la list des 7 millions de SNPs récupérée plus haut 
+Autre méthode avec la liste des 7 millions de SNPs récupérés plus haut 
 
 ATTENTION IL FAUT "\t" EN SEPARATEUR DANS LA LISTE, LORS DE LA RECUPERATION SE SONT DES ESPACES !!!!
 
-Ici on fait le meme filtrage mais avec bcftools view grace au script filtreview.sh :
+Ici on fait le meme filtrage mais avec bcftools view à partir de la liste des 7 millions de SNPs, grace au script filtreview.sh :
 
 ```
 #!/bin/sh
@@ -752,21 +752,21 @@ bcftools view -R list7mtab.list MetaGenotypesCalled870_raw_snps.vcf.gz > MetaGen
 
 ``` 
 
-(VOIR QUELLE METHODE EST LA MEILLEURE) isec semble plus rapide en terme de calcule et de manique ( pas de recuperation de list )
+(VOIR QUELLE METHODE EST LA MEILLEURE) -> isec semble plus rapide en terme de calcul et de manip ( pas de recuperation de liste )
 
-On obtient donc le fichier MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz, ou l'on a tous nos SNPs ainsi filtré 
+On obtient donc le fichier MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz, où l'on a tous nos SNPs ainsi filtrés 
 
-Et on compte le nombre de SNPs que nous avons apres "filtrage" grâce à un script similaire lors de la detection de SNPs: statsVcf_filtred.bash: 
+Et on compte le nombre de SNPs que nous avons après "filtrage" grâce à un script similaire lors de la detection de SNPs: statsVcf_filtred.bash: 
 
 ```
 
 #!/bin/bash
 
-#statsVcfsRaw.bash
-
 cat MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_isec
+
+/!\ Ici cat et pas zcat car pas compréssé, cela signifique qu'il faudra le compressé pour le prochain filtre /!\
 
 ```
 On obtien donc 5 104 090 SNPs
@@ -795,7 +795,7 @@ Sum	5104090
 ``` 
 # Maintenant on va appliquer le filtre LD :
 
-Pour cela plusieurs étape: 
+Pour cela plusieurs étapes: 
 
 - Modification du fichier plink : 
 
@@ -808,13 +808,13 @@ head -3 snplist_plink_600k.txt
 
 ``` 
 
-Hors on chercher  a avoir un fichier de format CHROM	POS 
+Hors on cherche à avoir un fichier de format CHROM	POS 
 
-- 1) Avec nedit tout simpletment “ search “ -> “ replace “ -> caractère a modifier -> en ""
+- 1) Avec nedit tout simplement “ search “ -> “ replace “ -> caractère a modifier -> en ""
 
 pour A, C, G, T, [HAV3.1] 
 
-Le ficheir est maintenant sous forme : 
+Le fichier est maintenant sous forme : 
 
 ```
 1:7577
@@ -835,14 +835,35 @@ Cela permet juste de pouvoir faire un cut plus facilement car par defaut cut uti
 
 - 2) Il faut maintenant changer les numéros de chromosomes en leur identifiants :
 
-on recupère seulement les 2 premiers caractères et on supprime \t
+```
+ID		Numero
+NC_001566.1    - mito ( je suppose supprimer dans le plink) 
+NC_037638.1    - 1
+NC_037639.1    - 2
+NC_037640.1    - 3 
+NC_037641.1    - 4 
+NC_037642.1    - 5
+NC_037643.1    - 6
+NC_037644.1    - 7
+NC_037645.1    - 8
+NC_037646.1    - 9
+NC_037647.1    - 10
+NC_037648.1    - 11
+NC_037649.1    - 12
+NC_037650.1    - 13 
+NC_037651.1    - 14
+NC_037652.1    - 15 
+NC_037653.1    - 16 
+``` 
+
+on recupère seulement les 2 premiers caractères pusique le numero de chromosomes ont 2 caractères max et on supprime \t 
 
 ```
 cut -c2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modif_col.txt
 sed -i -e 's/\t//g' snplist_plink_600k_modif_col.txt
 
 ``` 
-- 3) On a donc juste les numéro de chromosome allant de 1 à 16 et avec les commandes sed suivantes on remplace le numéro par l'identifiants
+- 3) On a donc juste les numéros de chromosomes allant de 1 à 16 et avec les commandes sed suivantes on remplace le numéro par l'identifiant
 
 ```
 sed -i -e 's/^1$/NC_037638.1/g' snplist_plink_600k_modif_col.txt.test
@@ -850,13 +871,15 @@ sed -i -e 's/^2$/NC_037639.1/g' snplist_plink_600k_modif_col.txt.test
 sed -i -e 's/^3$/NC_037640.1/g' snplist_plink_600k_modif_col.txt.test
 sed -i -e 's/^4$/NC_037641.1/g' snplist_plink_600k_modif_col.txt.test
 ``` 
-- 4) On garde la deuxieme colonne dans un autre fichier 
+- 4) On garde la deuxieme colonne dans un autre fichier ( POS )
 
 ```
 cut -f 2 snplist_plink_600k_modif2.txt > snplist_plink_600k_modifoui.txt
 
 ```
-- 5) Puis on assemble simplement les deux fichier : 
+
+
+- 5) Puis on assemble simplement les deux fichiers : 
 
 ```
 paste snplist_plink_600k_modif_col.txt.test snplist_plink_600k_modifoui.txt > snp_list_plink_600k_fini.txt
@@ -872,7 +895,7 @@ NC_037638.1	10360
 NC_037638.1	11791
 ```
 
-- On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtre LD ont été appliqués précédement, puis avec le script 
+- On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtres LD ont été appliqués précédement, puis avec le script filtre_list_plink :
 
 ``` 
 
