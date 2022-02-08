@@ -699,7 +699,7 @@ head -3 snplist600k.txt
 1:11791[HAV3.1]AG
 
 ```
-
+# Filtrage 
 
 Pour effectué le filtre sur nos 8.053.335 SNPs, on va récupérer des SNPs qui ont déjà été filtrés par Sonia E. Eynard, se trouvant dans :
 
@@ -726,7 +726,7 @@ bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/se
 
 ``` 
 
-Explication :
+# Explication :
 
 -c none est la valeur par défaut donc vous n'avez pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. Notez que cela signifie que A>G et A>G,C ne sont PAS identiques.
 
@@ -752,7 +752,7 @@ bcftools view -R list7mtab.list MetaGenotypesCalled870_raw_snps.vcf.gz > MetaGen
 
 ``` 
 
-VOIR QUELLE METHODE EST LA MEILLEURE
+(VOIR QUELLE METHODE EST LA MEILLEURE) isec semble plus rapide en terme de calcule et de manique ( pas de recuperation de list )
 
 On obtient donc le fichier MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz, ou l'on a tous nos SNPs ainsi filtré 
 
@@ -793,7 +793,7 @@ NC_037653.1	165828
 Sum	5104090
 
 ``` 
-Maintenant on va appliquer le filtre LD :
+# Maintenant on va appliquer le filtre LD :
 
 Pour cela plusieurs étape: 
 
@@ -871,7 +871,7 @@ NC_037638.1	10360
 NC_037638.1	11791
 ```
 
-On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtre LD ont été appliqués précédement, puis avec le script 
+- On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtre LD ont été appliqués précédement, puis avec le script 
 
 ``` 
 
