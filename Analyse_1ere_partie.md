@@ -726,7 +726,7 @@ bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/se
 
 ``` 
 
-# Explication :
+- Explication :
 
 -c none est la valeur par défaut donc vous n'avez pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. Notez que cela signifie que A>G et A>G,C ne sont PAS identiques.
 
