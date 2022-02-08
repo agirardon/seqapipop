@@ -4,7 +4,7 @@ Ce document présente les analyses faites pour obtenir les résultats qui sont p
 
 Les version des software utilisés sont les suivantes:
 
-Ici seulement les modules utilisé dans les scripts suivants et non tous les modules dans le fichiers 
+Ici seulement les modules utilisés dans les scripts suivants et non tous les modules dans le fichiers 
 
 more module 
 
@@ -32,7 +32,7 @@ Le génome de référence utilisé est Amel_HAv3.1 de Genebank : GCA_003254395.2
 
 ### fastq file 
 
-Les fichiers fastq individuel des population sont obtenus par sequencage Illumina. 
+Les fichiers fastq individuels des population sont obtenus par sequencage Illumina. 
 
 ### Préparation du mapping
 
@@ -40,7 +40,7 @@ Pour chaque run on a R1_fastq.gz et R2_fastq.gz avec le forward et le reverse re
 
 ### Recuperation des chemins de fastq 
 
-pour recupurer la liste : 
+pour récupurer la liste : 
 
 ```
 ls /genphyse/cytogen/seqapipop/FastqFromNG6/CORjaune* | awk 'BEGIN{FS=OFS="_"}{print $1,$2,$3}' | sort | uniq > corse_yellow.list
@@ -60,7 +60,7 @@ corse_yellow.list diviser en 7 pour pouvoir lancer les jobs petits à petit
 
 
 
-Les script de Mapping effectue le mapping avec BWA, marquage des lectures avec Picard, GATK BQSR( Base Quality Score Replication) 
+Les scripts de Mapping effectuent le mapping avec BWA, marquage des lectures avec Picard, GATK BQSR( Base Quality Score Replication) 
 
 
 Map_seqapipop_HAV3_1.bash 
@@ -125,15 +125,13 @@ done < ${SAMPLE_FILE}
 
 ```
 
-A REVOIR : 
-
-La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, des tests ont été fait avec PLOIDY=1 cela conduisait a un faux genotype dans les sequences répétées, et donnaient des SNP faussement positifs 
+La PLOIDY  est fixé à 2, bien que normalement les individus sont haploïdes, des tests ont été fait avec PLOIDY=1 cela conduisait à un faux genotype dans les sequences répétées, et donnaient des SNP faussement positifs 
 
 N=1  car il peut être utilisé pour un pool d'individus
 
 Explications plus précises dans le pdf : Mapping_Explication_PLOIDY=2.pdf
 
-Ce script prend une liste de chemin vers des noms d'echantillons : 
+Ce script prend une liste de chemin vers des noms d'échantillons : 
 
 
 
@@ -146,7 +144,7 @@ head -3 corse_yellow.list
 ```
 
 
-On obtiendra donc plusieurs fichier :
+On obtiendra donc plusieurs fichiers :
 
 
 
@@ -155,7 +153,7 @@ Les .bam en appelant mappingAV_2019_Dec.sh il effectue le mapping et la detectio
 - BWA
 - Picard MarkDuplicates 
 
-Le BQSR, en appelant bootstrapingAV_2019_Dec.sh fait un recalibrage du score de qualité de base sur chaque chromosome 
+Le BQSR, en appelant bootstrapingAV_2019_Dec.sh fait un recalibrage du score de qualité de base sur chaque chromosomes 
 
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003.bam
 - CORjaune10_GACCTGAA-CTCACCAA-AHJJN2DSX2_L003_bam.list
@@ -172,7 +170,7 @@ et appelle le calling, callingAV_2019_Dec.sh qui utilise les .bam pour détecter
 
 ### Control gvcf are complete 
 
-Un contrôle est effectué pour vérifié que les jobs se sont terminés correctement ( interruption possible, etc...)
+Un contrôle est effectué pour vérifier que les jobs se sont terminés correctement ( interruption possible, etc...)
 
 ```
 #!/bin/bash
@@ -222,7 +220,7 @@ more CORjaune11_TCTCTACT-GAACCGCG-AHJJN2DSX2_L003.g.vcf.gz.count
 
 avec la commande 
 
-En effet on verifie qu'on est bien arrivé jusqu'au chromosome mitochondrial qui est le dernier à être lancé 
+En effet on verifie qu'on est bien arrivé jusqu'au chromosome mitochondrial qui est le dernier à être lancé, comme il n'est pas utile pour l'analyse meme si celui-ci n'est pas abouti cela n'est pas handicapant pour la suite de l'analyse.
 
 
 ``` 
@@ -313,7 +311,7 @@ On obtient donc le script Called
 
 Ce script permet de lancer les différents chromosomes en parallèle, grâce au passage de la variable ${i} à l'aide de l'option -c.
 
-qui sera lancé par le script 
+qui sera lancé par le script combineGVCFsHAV3_1_Lance_slurm.bash : 
 
 
 
@@ -339,7 +337,7 @@ done
 
 
 
-On doit obtenir un fichier par chromosomes (17 : 16 autosome 1 mitochondrial)
+On doit obtenir un fichier par chromosomes (17 : 16 autosomes 1 mitochondrial). 
 
 
 
@@ -375,7 +373,7 @@ done
 
 En sortie on a les 10 dernières positions pour chaques chromosome dans MetaGenotypesNC_001566.1.g.vcf.check
 
-Position des derniers variants de chaque chromosomes: 
+Positions des derniers variants de chaque chromosomes: 
 
 ```
  for i in `ls *.check`; do tail -1 ${i}; done
@@ -402,7 +400,7 @@ NC_037653.1     7238523
 
 
 
-On compare a la longueur des chromosome et verifier qu'ils sont proches: 
+On compare à la longueur des chromosomes et verifier qu'ils sont proches: 
 
 
 
@@ -499,6 +497,8 @@ Cette ligne apparait seulement si tout s'est bien passé, donc on doit obtenir u
 
 ### Concatenate vcf file
 
+Ici, il est effectué une simple concatenation des VCF file en 1 seul VCF comprennant les 17 chromosomes
+
 ``` 
 #!/bin/bash
 
@@ -510,6 +510,9 @@ bcftools concat -f /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Co
 
 tabix MetaGenotypesCalled870.vcf.gz
 ```
+
+less -S MetaGenotypesCalled870.vcf.gz pour une meilleure lisibilité du fichier :
+
 
 
 
@@ -557,7 +560,7 @@ Environ 11 millions de variants
 
 
 
-### Retiens seulement les SNPs
+### Retiens les SNPs
 
 
 
@@ -657,7 +660,7 @@ Environ 2 900 000 Indels
 
 1 apres tous les filtres, avec 7 millions de SNP 
 
- Récupération de la liste des 7 millions de SNP 
+ - Récupération de la liste des 7 millions de SNP 
 
 ```#!/bin/sh
 
@@ -679,7 +682,7 @@ NC_037638.1 5698
 NC_037638.1 6621
 ``` 
 
-Pour ce qui est de la liste des 600 000 sous forme de plink 
+- Pour ce qui est de la liste des 600 000 sous forme de plink 
 
 ```
 #!/bin/sh
