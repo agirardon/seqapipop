@@ -927,9 +927,9 @@ module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
 
 bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
-#bcftools index home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
+bcftools index /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
 
-#bcftools view -R home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz -o #home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz
+bcftools view -R /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz -O z -o /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz
 
 ``` 
 
