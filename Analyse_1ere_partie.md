@@ -724,11 +724,12 @@ Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se b
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
 
-bcftools isec -c none -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps.vcf.gz -o  /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz
+bcftools isec -c none -p /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps.vcf.gz
+
 
 
 ``` 
-
+-p créé le directory de sortie avec le vcf file et les sites 
 
 -c none est la valeur par défaut, pas vraiment besoin de l'inclure dans la commande, mais elle indique à bcftools de considérer deux variantes comme identiques seulement si leur chromosome, pos, ref, et alt sont tous identiques. 
 Note: que cela signifie que A>G et A>G,C ne sont PAS identiques.
@@ -906,11 +907,11 @@ NC_037638.1	11791
 
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
-bgzip -c MetaGenotypesCalled870_raw_snps_filtreisec.vcf.gz > MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz #compresse le fichier car il est necessaire d'avoir un fichier compressé 
-tabix -p MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz
 
+bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
+#bcftools index home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
 
-bcftools view -R snplist_plink_600k_fini.txt MetaGenotypesCalled870_raw_snps_filtreisec_afiltrer.vcf.gz > MetaGenotypesCalled870_raw_snps_filtreisec_filtreplink.vcf.gz
+#bcftools view -R home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz -o #home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz
 
 ``` 
 
