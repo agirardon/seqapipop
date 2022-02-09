@@ -899,6 +899,24 @@ NC_037638.1	10360
 NC_037638.1	11791
 ```
 
+PROBLEME ICI !!!!! 
+
+j'ai tout relancé : 
+
+- refait la liste
+- refait le VCF avec isec
+- le probleme vient de l'ancien script, en effet il faut compresser le fichier de sorti VCF obtenu avec bcftools isec, j'utilisais 
+
+``` 
+bgzip -c infile.vcf > outfile.vcf.gz
+```
+or ils etait marqué " outfile.vcf.gz doesn't exist " si je decidais de le créer, on me disais " format inconnu " donc avec la commande  :
+
+```
+bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
+```
+Ca a l'air de fonctionner de cette manière la plutot
+
 - On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtres LD ont été appliqués précédement, puis avec le script filtre_list_plink :
 
 ``` 
