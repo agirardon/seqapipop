@@ -720,13 +720,16 @@ Les figures se trouve sur dans l'article ( dois-je les rajouter dans mon git hub
 Il est obtenu environ 7 millions de SNPs de bonne qualité, sur lequels ont se basera pour filtré nos SNPs. On va matcher ces SNPs là, dont nous sommes sûr de leur qualité, aux SNPs que l'ont a obtenu grâce au script filtreisec.sh , et retenir seulement les SNPs en commun, cela evite de refaire toutes l'etape de filtrage de qualité: 
 
 
+/!\ ATTENTION AU SENS POUR ISEC le premier fichier sera celui "d'appuie" pour l'intersection (pour avoir que 403 individu et non 870 si on change de sens)
+
 ``` 
 #!/bin/sh
 
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
 
-bcftools isec -c none -p /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec -n=2 -w1 /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/MetaGenotypesCalled870_raw_snps.vcf.gz
+bcftools isec -c none -p /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisecautresens -n=2 -w1  /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/retainSNP/MetaGenotypesCalled870_raw_snps.vcf.gz /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/vcf_cleanup/MetaGenotypesCalled870_raw_snps_allfilter.vcf.gz
+
 
 
 
@@ -901,23 +904,11 @@ NC_037638.1	10360
 NC_037638.1	11791
 ```
 
-PROBLEME ICI !!!!! 
-
-j'ai tout relancé : 
-
-- refait la liste
-- refait le VCF avec isec
-- le probleme vient de l'ancien script, en effet il faut compresser le fichier de sorti VCF obtenu avec bcftools isec, j'utilisais 
-
-``` 
-bgzip -c infile.vcf > outfile.vcf.gz
-```
-or ils etait marqué " outfile.vcf.gz doesn't exist " si je decidais de le créer, on me disais " format inconnu " donc avec la commande  :
+ETRE DANS OUTISECAUTRE SENS ET PAS OUTISEC
 
 ```
 bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
 ```
-Ca a l'air de fonctionner de cette manière la plutot
 
 - On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtres LD ont été appliqués précédement, puis avec le script filtre_list_plink :
 
@@ -927,10 +918,10 @@ Ca a l'air de fonctionner de cette manière la plutot
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
 
-bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
-bcftools index /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz
+bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled403_raw_snps_filtre_isec.vcf.gz 
+bcftools index /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled403_raw_snps_filtre_isec.vcf.gz
 
-bcftools view -R /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz -O z -o /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz
+bcftools view -R /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled403_raw_snps_filtre_isec.vcf.gz -O z -o /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled403_raw_snps_filtre_isec_plink.vcf.gz
 
 
 ``` 
@@ -942,7 +933,7 @@ On compte maintenant le nombre de SNPs de bonne qualité suite au filtre LD grâ
 
 #statsVcfsRaw.bash
 
-zcat  MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz| grep -v '#' | cut -f 1 | sort | uniq -c | \
+zcat  MetaGenotypesCalled403_raw_snps_filtre_isec_plink.vcf.gz| grep -v '#' | cut -f 1 | sort | uniq -c | \
 
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_isec_sens
 
