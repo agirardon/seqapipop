@@ -1,14 +1,3 @@
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-MODIFICATION DES CHEMIN APRES CONCATENATION, REVOIR LES CHEMIN
-
-
-
 ###  1. Introduction
 
 Ce document présente les analyses faites pour obtenir les résultats qui sont présentés par la suite. Pour la répétabilité ou les différentes listes les chemins sont à changer et à adapter.
@@ -628,7 +617,7 @@ Environ 8 millions de SNPs
 
 module load -f /home/gencel/vignal/save/000_ProgramModules/program_module
 
-OUT=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/
+OUT=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/retainIndels
 
 gatk --java-options "-Xmx64g" SelectVariants \
      -R /home/gencel/vignal/save/Genomes/Abeille/HAv3_1_indexes/GCF_003254395.2_Amel_HAv3.1_genomic.fna \
@@ -640,6 +629,8 @@ gatk --java-options "-Xmx64g" SelectVariants \
 zcat MetaGenotypesCalled870_raw_snps.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
 awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRawINDELs
 ```
+
+
 ``` 
 more countVcfSumRawINDELs
 NC_001566.1	247
