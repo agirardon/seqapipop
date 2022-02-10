@@ -931,36 +931,54 @@ Ca a l'air de fonctionner de cette manière la plutot
 - On va maintenant pouvoir appliquer cette liste comme filtre en se basant sur la même idée que les filtres LD ont été appliqués précédement, puis avec le script filtre_list_plink :
 
 ``` 
-
 #!/bin/sh
 
 module load -f  /home/gencel/vignal/save/000_ProgramModules/program_module
 
 
 bcftools view -I /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/0000.vcf -O z -o MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
-bcftools index /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz 
+bcftools index /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz
 
 bcftools view -R /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/snplist_plink_600k_fini.txt /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec.vcf.gz -O z -o /home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisec/MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz
 
+
 ``` 
 
-On compte maintenant le nombre de SNPs de bonne qualité suite au filtre LD grâce au script statsVcf_filtreLD.bash :
+On compte maintenant le nombre de SNPs de bonne qualité suite au filtre LD grâce au script statsVcf_filtre_isec_sens1.bash :
 
 ``` 
 #!/bin/bash
 
+#statsVcfsRaw.bash
 
-cat MetaGenotypesCalled870_raw_snps_filtreisec_filtreplink.vcf.gz | grep -v '#' | cut -f 1 | sort | uniq -c | \
+zcat  MetaGenotypesCalled870_raw_snps_filtre_isec_plink.vcf.gz| grep -v '#' | cut -f 1 | sort | uniq -c | \
 
-awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_plinked 
-
-```
-
-
-On obtient donc XXXXXXXXXXXXXX SNPs de bonne qualité
+awk 'BEGIN {OFS="\t";sum=0}{print $2, $1; sum += $1} END {print "Sum", sum}' > countVcfSumRaw_isec_sens
 
 ```
-more countVcfSumRaw_plinked
+
+
+On obtient donc 590 724 SNPs de bonne qualité
+
+```
+more countVcfSumRaw_isec_sens
+NC_037638.1	81264
+NC_037639.1	46384
+NC_037640.1	40374
+NC_037641.1	36824
+NC_037642.1	38745
+NC_037643.1	47025
+NC_037644.1	34211
+NC_037645.1	31633
+NC_037646.1	32432
+NC_037647.1	30742
+NC_037648.1	33379
+NC_037649.1	34858
+NC_037650.1	31729
+NC_037651.1	28807
+NC_037652.1	24934
+NC_037653.1	17383
+Sum	590724
 
 ```
 
