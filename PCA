@@ -1,0 +1,45 @@
+### Introduction
+
+Maintenant qu'on a notre VCF avec nos 590 724 SNPs de bonne qualité.
+
+L'objectif est d'obtenir une PCA a partir de ces SNPs :
+
+Rappel :
+
+296 individus de référence : Black (Mellifera), Yellow(Ligustica), Green(Caucasia) se trouvant dans : /work/genphyse/cytogen/Alain/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/RFMix/Pure95/in/IndsPopReference.list
+
+```
+head -10 IndsPopReference.list
+Ab-PacBio	Black
+BER10	Yellow
+BER11	Yellow
+BER12	Yellow
+BER13	Yellow
+BER14	Yellow
+BER15	Yellow
+BER16	Yellow
+BER18	Yellow
+BER19	Yellow
+```
+
+44 individus Corse a qui on associera comme couleur "blue" : 
+/genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/CORjaune/IndividuCOR44_ancien.list
+
+```
+head -3 IndividuCOR44_ancien.list
+AOC10	blue
+AOC11	blue
+AOC12	blue
+``` 
+Et nos 63 nouveaux individus Corse à qui on associera comme couleur "red" :
+/genphyse/cytogen/seqapipop/Data/Apis-mellifera/seqapipopOnHAV3_1/CORjaune/IndividuCORjaune63.list
+
+```
+head -3 IndividuCORjaune63.list
+CORjaune10	red
+CORjaune11	red
+CORjaune12	red
+```
+
+On s'attend a une ACP avec 3 groupes BLACK / YELLOW / GREEN comprennant nos individus de référence.
+Comme dans l'article, les anciens individus Corse, se situante entre les individus YELLOW et BLACK 
