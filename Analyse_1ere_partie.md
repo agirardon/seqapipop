@@ -1026,5 +1026,47 @@ sort PCA_SeqApiPop_403_LD03.eigenvec > sort_PCA_SeqApiPop_403_LD03.eigenvec
 ```
 On a donc le fichier trier pour la suite de l'analyse se trouvant dans le fichier .rdm PCA_seqapipop
 
+### Analyse Supplémentaire :
+
+# Filtre MAF 0.01
+
+On effectue un Filtre MAF 0.01 grâce à plink sur nos données filtrées avec les 7 millions grâce au filtre : FiltreMaf001.sh
+
+```
+#!/bin/bash
+
+module load -f /home/agirardon/work/seqapipopOnHAV3_1/program_module/module
+
+
+NAME=SeqApiPop_403
+
+VCFin=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisecautresens/MetaGenotypesCalled403_raw_snps_filtre_isec.vcf.gz
+VCFout=~/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/filtreMaf001/${NAME}
+
+plink --vcf ${VCFin} \
+      --keep-allele-order \
+      --keep ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/Unique629.list \
+      --a2-allele ${VCFin} 4 3 '#' \
+      --allow-no-sex \
+      --allow-extra-chr \
+      --chr-set 16 \
+      --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
+      --chr 1-16 \
+      --mind 0.1 \
+      --geno 0.1 \
+      --out ${VCFout} \
+      --make-bed \
+      --missing
+      
+plink --bfile ${VCFout} \
+      --maf 0.01 \
+      --out ${VCFout}_maf001 \
+      --make-bed
+plink --bfile ${VCFout} \
+      --out ${VCFout}_maf005 \
+      --maf 0.05 \
+      --make-bed
+```
+
 
 
