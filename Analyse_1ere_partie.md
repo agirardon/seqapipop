@@ -12,7 +12,8 @@ more module
  
 #%Module1.0###############################################################
 
-
+RAJOUTER PLINK
+RAJOUTER ADMIXTURE
 module load bioinfo/seqtk-1.2
 module load bioinfo/bwa-0.7.15
 module load bioinfo/samtools-1.8
