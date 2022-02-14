@@ -963,7 +963,68 @@ NC_037653.1	17383
 Sum	590724
 
 ```
+### PCA avec Plink
 
+La PCA va etre effectué grâce à Plink, et au script suivant :
+
+```
+#!/bin/bash
+
+module load -f /home/agirardon/work/seqapipopOnHAV3_1/program_module/module
+
+
+# perform linkage pruning 
+
+VCF=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisecautresens/MetaGenotypesCalled403_raw_snps_filtre_isec_plink.vcf.gz
+
+plink --vcf ${VCF} --allow-extra-chr \ #allow-extra-chr permet de lire le fichier malgré des noms de chromosome et pas des numéro de chromosome
+      --indep-pairwise 1749 175 0.3 --out SeqApiPop_403_LD03
+
+
+# prune and create pca
+
+plink --vcf ${VCF} --allow-extra-chr \
+      --extract SeqApiPop_403_LD03.prune.in \
+      --make-bed --pca --out PCA_SeqApiPop_403_LD03
+```
+
+En sorti on a bien plusieurs fichiers, dont celui qui nous servira pour ploter la PCA : PCA_SeqApiPop_403_LD03.eigenvec
+
+```
+head -3 PCA_SeqApiPop_403_LD03.eigenvec
+
+AOC10 AOC10 0.0214301 0.0073294 0.00899092 0.0481961 0.0326964 0.0345816 -0.000382077 -0.0110416 -0.0438832 -0.000245611 -8.02539e-05 0.00158182 -0.00117293 -0.00122113 0.00110382 0.00133751 -0.000410789 0.00212435 0.0024354 0.00162384
+AOC11 AOC11 0.0212416 0.00792505 0.0114335 0.0454902 0.0292201 0.0295928 -0.00482164 -0.00768436 -0.0317105 -0.0011311 0.000944703 0.00290791 0.00036738 0.00201229 0.000597761 -8.23973e-06 0.00115585 -0.00245061 0.000437679 0.000697422
+AOC12 AOC12 0.0203242 0.0084029 0.0106885 0.0467117 0.0326449 0.0326058 0.00100988 -0.00928108 -0.0455404 -0.000493906 -0.00158167 -0.000253945 -0.000226169 0.000236364 0.000728524 -0.000162989 0.000967244 -0.00127729 0.000300538 -0.000624591
+```
+
+Cependant pour la suite de l'analyse il est important de le trier, car on va devoir ajouter à ce fichier, le nom des espèces pour ploter la PCA, en effet notre liste ressemble plutot à cela :
+
+``` 
+
+ID	Sp
+Ab.PacBio	Mellifera							
+AOC10	CorseAnciennes
+AOC11	CorseAnciennes
+AOC12	CorseAnciennes
+AOC14	CorseAnciennes
+AOC15	CorseAnciennes
+AOC16	CorseAnciennes
+AOC17	CorseAnciennes
+AOC18	CorseAnciennes
+AOC19	CorseAnciennes
+AOC20	CorseAnciennes
+
+```
+
+Ici en effet notre premier individu est Ab.PacBio, alors que dans la sortie .eigenvec le premier individu est AOC10
+
+Donc avec une simple commande : 
+
+```
+sort PCA_SeqApiPop_403_LD03.eigenvec > sort_PCA_SeqApiPop_403_LD03.eigenvec
+```
+On a donc le fichier trier pour la suite de l'analyse se trouvant dans le fichier .rdm PCA_seqapipop
 
 
 
