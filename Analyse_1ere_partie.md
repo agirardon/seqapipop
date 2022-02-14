@@ -1045,7 +1045,7 @@ VCFout=~/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/filtreM
 
 plink --vcf ${VCFin} \
       --keep-allele-order \
-      --keep ~/seqapipopOnHAV3_1/seqApiPopVcfFilteredSonia/plinkAnalyses/WindowSNPs/Unique629.list \
+      --keep ~/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/filtreMaf001/Unique403_test.list \
       --a2-allele ${VCFin} 4 3 '#' \
       --allow-no-sex \
       --allow-extra-chr \
@@ -1062,6 +1062,7 @@ plink --bfile ${VCFout} \
       --maf 0.01 \
       --out ${VCFout}_maf001 \
       --make-bed
+      
 plink --bfile ${VCFout} \
       --out ${VCFout}_maf005 \
       --maf 0.05 \
