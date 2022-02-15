@@ -1033,6 +1033,18 @@ On a donc le fichier trier pour la suite de l'analyse se trouvant dans le fichie
 
 On effectue un Filtre MAF 0.01 grâce à plink sur nos données filtrées avec les 7 millions grâce au filtre : FiltreMaf001.sh
 
+Il faut d'abord préparer une liste avec nos individus Unique403_test.list :
+
+```
+ head -3 Unique403_test.list 
+Ab-PacBio		Ab-PacBio	
+BER10		BER10	
+BER11		BER11	
+``` 
+on va maintenant pouvoir effectué un filtre Maf 0.01 sur notre fichier vcf grâce a Plink en utilisant le script suivant : 
+
+(ici on effectue un filtre avec maf 0.05 mais je ne l'utiliserai pas c'est juste au cas ou si j'en ai besoin plus tard ) 
+
 ```
 #!/bin/bash
 
@@ -1044,15 +1056,14 @@ NAME=SeqApiPop_403
 VCFin=/home/agirardon/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/outisecautresens/MetaGenotypesCalled403_raw_snps_filtre_isec.vcf.gz
 VCFout=~/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/filtreMaf001/${NAME}
 
+
+
 plink --vcf ${VCFin} \
       --keep-allele-order \
       --keep ~/work/seqapipopOnHAV3_1/combineGVCFs/LesVCF/Concatenate/Filtrage/filtreMaf001/Unique403_test.list \
-      --a2-allele ${VCFin} 4 3 '#' \
       --allow-no-sex \
       --allow-extra-chr \
-      --chr-set 16 \
       --set-missing-var-ids @:#[HAV3.1]\$1\$2 \
-      --chr 1-16 \
       --mind 0.1 \
       --geno 0.1 \
       --out ${VCFout} \
@@ -1060,15 +1071,49 @@ plink --vcf ${VCFin} \
       --missing
       
 plink --bfile ${VCFout} \
+      --allow-extra-chr \
       --maf 0.01 \
       --out ${VCFout}_maf001 \
       --make-bed
       
 plink --bfile ${VCFout} \
+      --allow-extra-chr \
       --out ${VCFout}_maf005 \
       --maf 0.05 \
       --make-bed
+
 ```
+
+Et on obtien le fichier .bim : 
+
+```
+head -3 SeqApiPop_403_maf001.bim
+NC_037638.1	NC_037638.1:7034[HAV3.1]AG	0	7034	A	G
+NC_037638.1	NC_037638.1:7092[HAV3.1]AG	0	7092	G	A
+NC_037638.1	NC_037638.1:7299[HAV3.1]CT	0	7299	T	C
+```
+Pour obtenir le fichier dans le format souhaité pour pouvoir filtrer sur mon VCF, je vais faire de ce fichier une simple liste contenant le chromosome et la position du SNP : 
+
+avec des simple :
+
+``` 
+cut -f 1 SeqApiPop_403_maf001.bim > list.Maf001_col1
+cut -f 4 SeqApiPop_403_maf001.bim > list.Maf001_col4
+
+paste list.Maf001_col1 list.Maf001_col4 > list.Maf001_col4
+
+j'obtient bien le format souhaité
+
+```
+head -3 snp_list_filtremaf001.txtVCF
+NC_037638.1	7034
+NC_037638.1	7092
+NC_037638.1	7299
+```
+
+Ici on a les individu avec les mitochondries qui ne sont pas utiles pour l'analyse alors je vais simplement les supprimer avec nedit  et avoir la liste souhaitée dans snp_list_filtremaf001_nomito.txt
+
+
 
 
 
