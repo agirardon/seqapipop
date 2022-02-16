@@ -1,5 +1,6 @@
 ### Admixture Analyse 
 
+
 Suite au filtrage LD avec les 601 945 SNPs, il est obtenu 590 724 SNPs qui ont donc subit un filtrage LD indirectement, en effet puisqu'ils sont matchés avec des SNPs déjà filtrés par LD=0.3 on considère que ceux la aussi aurait aussi "passer" le filtre LD=0.3 
 
 
