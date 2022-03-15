@@ -1,5 +1,6 @@
 # seqapipop
-Population genomic analyses of honeybee populations 
+
+## Population genomic analyses of honeybee populations 
  
  
 Analysis of the 90 new samples by aligning Illumina reads to one of the reference genomes (BWA) and then
